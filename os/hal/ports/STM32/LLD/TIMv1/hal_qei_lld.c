@@ -82,6 +82,14 @@ QEIDriver QEID5;
 QEIDriver QEID8;
 #endif
 
+/**
+ * @brief   QEID15 driver identifier.
+ * @note    The driver QEID15 allocates the timer TIM15 when enabled.
+ */
+#if STM32_QEI_USE_TIM15 || defined(__DOXYGEN__)
+QEIDriver QEID15;
+#endif
+
 /*===========================================================================*/
 /* Driver local variables and types.                                         */
 /*===========================================================================*/
@@ -140,6 +148,12 @@ void qei_lld_init(void) {
   qeiObjectInit(&QEID8);
   QEID8.tim = STM32_TIM8;
 #endif
+
+#if STM32_QEI_USE_TIM15
+  /* Driver initialization.*/
+  qeiObjectInit(&QEID15);
+  QEID15.tim = STM32_TIM15;
+#endif
 }
 
 /**
@@ -190,6 +204,12 @@ void qei_lld_start(QEIDriver *qeip) {
     if (&QEID8 == qeip) {
       rccEnableTIM8(FALSE);
       rccResetTIM8();
+    }
+#endif
+#if STM32_QEI_USE_TIM15
+    if (&QEID15 == qeip) {
+      rccEnableTIM15(FALSE);
+      rccResetTIM15();
     }
 #endif
   }
@@ -262,6 +282,12 @@ void qei_lld_stop(QEIDriver *qeip) {
 #if STM32_QEI_USE_TIM8
     if (&QEID8 == qeip) {
       rccDisableTIM8();
+    }
+#endif
+
+#if STM32_QEI_USE_TIM15
+    if (&QEID15 == qeip) {
+      rccDisableTIM15();
     }
 #endif
 }

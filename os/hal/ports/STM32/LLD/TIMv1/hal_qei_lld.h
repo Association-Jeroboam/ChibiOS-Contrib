@@ -176,9 +176,14 @@
 #error "TIM8 not present in the selected device"
 #endif
 
-#if !STM32_QEI_USE_TIM1 && !STM32_QEI_USE_TIM2 &&                           \
-    !STM32_QEI_USE_TIM3 && !STM32_QEI_USE_TIM4 &&                           \
-    !STM32_QEI_USE_TIM5 && !STM32_QEI_USE_TIM8
+#if STM32_QEI_USE_TIM15 && !STM32_HAS_TIM15
+#error "TIM8 not present in the selected device"
+#endif
+
+#if !STM32_QEI_USE_TIM1  && !STM32_QEI_USE_TIM2 &&                           \
+    !STM32_QEI_USE_TIM3  && !STM32_QEI_USE_TIM4 &&                           \
+    !STM32_QEI_USE_TIM5  && !STM32_QEI_USE_TIM8 &&                           \
+    !STM32_QEI_USE_TIM15
 #error "QEI driver activated but no TIM peripheral assigned"
 #endif
 
@@ -231,6 +236,14 @@
 #endif
 #endif
 
+#if STM32_QEI_USE_TIM15
+#if defined(STM32_TIM15_IS_USED)
+#error "QEID15 requires TIM15 but the timer is already used"
+#else
+#define STM32_TIM15_IS_USED
+#endif
+#endif
+
 /* IRQ priority checks.*/
 #if STM32_QEI_USE_TIM1 &&                                                   \
     !OSAL_IRQ_IS_VALID_PRIORITY(STM32_QEI_TIM1_IRQ_PRIORITY)
@@ -260,6 +273,11 @@
 #if STM32_QEI_USE_TIM8 &&                                                   \
     !OSAL_IRQ_IS_VALID_PRIORITY(STM32_QEI_TIM8_IRQ_PRIORITY)
 #error "Invalid IRQ priority assigned to TIM8"
+#endif
+
+#if STM32_QEI_USE_TIM15 &&                                                   \
+    !OSAL_IRQ_IS_VALID_PRIORITY(STM32_QEI_TIM15_IRQ_PRIORITY)
+#error "Invalid IRQ priority assigned to TIM15"
 #endif
 
 #if QEI_USE_OVERFLOW_DISCARD
@@ -443,6 +461,10 @@ extern QEIDriver QEID5;
 
 #if STM32_QEI_USE_TIM8 && !defined(__DOXYGEN__)
 extern QEIDriver QEID8;
+#endif
+
+#if STM32_QEI_USE_TIM15 && !defined(__DOXYGEN__)
+extern QEIDriver QEID15;
 #endif
 
 #ifdef __cplusplus
